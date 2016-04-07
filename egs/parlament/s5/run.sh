@@ -40,17 +40,17 @@ database="/home/vavrek/kaldi-debug/egs/parlament/database";
 #===========================================================
 
 # prepare traning data for parlament
-./local/parlament_data_prep_train.pl $database || exit 1;
-./utils/validate_data_dir.sh --no-feats data/train;
-./utils/fix_data_dir.sh data/train;
+#./local/parlament_data_prep_train.pl $database || exit 1;
+#./utils/validate_data_dir.sh --no-feats data/train;
+#./utils/fix_data_dir.sh data/train;
 
 # Now make MFCC features.
-#mfccdir_train=${DATA_ROOT}/data/mfcc_train
-#steps/make_mfcc.sh --cmd "$train_cmd" --nj $njobs data/train exp/make_mfcc/train $mfccdir_train || exit 1;
-#steps/compute_cmvn_stats.sh data/train exp/make_mfcc/train $mfccdir_train || exit 1;
+mfccdir_train=${DATA_ROOT}/data/mfcc_train
+steps/make_mfcc.sh --cmd "$train_cmd" --nj $njobs data/train exp/make_mfcc/train $mfccdir_train || exit 1;
+steps/compute_cmvn_stats.sh data/train exp/make_mfcc/train $mfccdir_train || exit 1;
 
 # Prepare data/lang and data/local/lang directories
-#utils/prepare_lang.sh --position-dependent-phones $pos_dep_phones data/local/train '-' data/local/lang_temp_train data/lang_train || exit 1
+utils/prepare_lang.sh --position-dependent-phones $pos_dep_phones data/local/train '-' data/local/lang_temp_train data/lang_train || exit 1
 
 #===========================================================
 # 	CREATING TESTING DATA & EXTRACTING MFCCs
