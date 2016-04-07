@@ -31,7 +31,7 @@ pos_dep_phones=false
 
 [[ $# -ge 1 ]] && { echo "Unexpected arguments"; exit 1; }
 
-database=/home/vavrek/kaldi-debug/data/parlament;
+database=/home/vavrek/kaldi-debug/egs/parlament/database;
 
 
 
@@ -50,7 +50,7 @@ database=/home/vavrek/kaldi-debug/data/parlament;
 #steps/compute_cmvn_stats.sh data/train exp/make_mfcc/train $mfccdir_train || exit 1;
 
 # Prepare data/lang and data/local/lang directories
-#utils/prepare_lang.sh --position-dependent-phones $pos_dep_phones data/local/dict '-' data/local/lang_temp_train data/lang_train || exit 1
+#utils/prepare_lang.sh --position-dependent-phones $pos_dep_phones data/local/train '-' data/local/lang_temp_train data/lang_train || exit 1
 
 #===========================================================
 # 	CREATING TESTING DATA & EXTRACTING MFCCs
@@ -66,11 +66,11 @@ database=/home/vavrek/kaldi-debug/data/parlament;
 #steps/compute_cmvn_stats.sh data/test exp/make_mfcc/test $mfccdir_test || exit 1;
 
 # Prepare data/lang and data/local/lang directories
-#utils/prepare_lang.sh --position-dependent-phones $pos_dep_phones data/local/dict '-' data/local/lang_temp_test data/lang_test || exit 1
+#utils/prepare_lang.sh --position-dependent-phones $pos_dep_phones data/local/test '-' data/local/lang_temp_test data/lang_test || exit 1
 
 #create test set
-#cat data/local/dict/lm.arpa | utils/find_arpa_oovs.pl data/lang_test/words.txt > data/lang_test/oovs.txt
-#cat data/local/dict/lm.arpa | grep -v '<s> <s>' | grep -v '</s> <s>' | grep -v '</s> </s>' | arpa2fst - | fstprint | utils/remove_oovs.pl data/lang_test/oovs.txt | utils/eps2disambig.pl | utils/s2eps.pl | fstcompile --isymbols=data/lang_test/words.txt --osymbols=data/lang_test/words.txt  --keep_isymbols=false --keep_osymbols=false | fstrmepsilon | fstarcsort --sort_type=ilabel > data/lang_test/G.fst 
+#cat data/local/test/lm.arpa | utils/find_arpa_oovs.pl data/lang_test/words.txt > data/lang_test/oovs.txt
+#cat data/local/test/lm.arpa | grep -v '<s> <s>' | grep -v '</s> <s>' | grep -v '</s> </s>' | arpa2fst - | fstprint | utils/remove_oovs.pl data/lang_test/oovs.txt | utils/eps2disambig.pl | utils/s2eps.pl | fstcompile --isymbols=data/lang_test/words.txt --osymbols=data/lang_test/words.txt  --keep_isymbols=false --keep_osymbols=false | fstrmepsilon | fstarcsort --sort_type=ilabel > data/lang_test/G.fst 
 #fstisstochastic data/lang_test/G.fst
 
 #===========================================================
