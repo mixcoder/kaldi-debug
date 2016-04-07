@@ -6,7 +6,7 @@ use strict;
 my $db_dir = shift;
 my $info = "$db_dir/parlament3_diftong_j.infos";
 my $lst = "$db_dir/test.lst";
-my $out_dir = "$db_dir/data/test";
+my $out_dir = "data/test";
 
 
 my $out_txt 	= $out_dir . "/text";
