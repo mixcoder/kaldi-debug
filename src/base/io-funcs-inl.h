@@ -22,7 +22,7 @@
 #ifndef KALDI_BASE_IO_FUNCS_INL_H_
 #define KALDI_BASE_IO_FUNCS_INL_H_ 1
 
-// Do not include this file directly.  It is included by base/io-funcs.h
+// Do not include this file directly.  It is included by base/io-funcs.h//
 
 #include <limits>
 #include <vector>
