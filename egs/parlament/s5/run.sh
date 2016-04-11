@@ -56,9 +56,9 @@ database="/home/vavrek/kaldi-debug/egs/parlament/database";
 # 	CREATING TESTING DATA & EXTRACTING MFCCs
 #===========================================================
 
-./local/parlament_data_prep_test.pl $database || exit 1;
-./utils/validate_data_dir.sh --no-feats data/test;
-./utils/fix_data_dir.sh data/test;
+#./local/parlament_data_prep_test.pl $database || exit 1;
+#./utils/validate_data_dir.sh --no-feats data/test;
+#./utils/fix_data_dir.sh data/test;
 
 # Now make MFCC features.
 #mfccdir_test=${DATA_ROOT}/data/mfcc_test
@@ -78,7 +78,7 @@ database="/home/vavrek/kaldi-debug/egs/parlament/database";
 #===========================================================
 
 #utils/subset_data_dir.sh data/train 1000 data/train.1k  || exit 1;
-#steps/train_mono.sh --nj $njobs --cmd "$train_cmd" data/train data/lang_train exp/mono  || exit 1;
+steps/train_mono.sh --nj $njobs --cmd "$train_cmd" data/train data/lang_train exp/mono  || exit 1;
 
 #utils/mkgraph.sh --mono data/lang_test exp/mono exp/mono/graph || exit 1;
 #steps/decode.sh --config conf/decode.config --nj $njobs --cmd "$decode_cmd" exp/mono/graph data/test exp/mono/decode
