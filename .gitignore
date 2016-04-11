@@ -1,6 +1,9 @@
 tools
+src/*/*.o
 egs/parlament/database
 egs/parlament/s5/compute_mfcc_cmvn.sh
 egs/parlament/s5/data
 egs/parlament/s5/exp
+egs/parlament/s5/conf
+
 
