@@ -1,8 +1,6 @@
 tools
-src/*/!(*.cc)
-src/*/!(*.h)
-src/*/!(Makefile)
-src/!(Makefile)
+src/*/*.!(cc)
+src/*/*.!(h)
 egs/parlament/database
 egs/parlament/s5/compute_mfcc_cmvn.sh
 egs/parlament/s5/data
