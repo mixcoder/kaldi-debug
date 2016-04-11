@@ -1,6 +1,7 @@
 tools
-src/*/*.!(cc)
-src/*/*.!(h)
+find ./src/*/ -type f ! -name '*.cc'
+find ./src/*/ -type f ! -name '*.h'
+find ./src -type f ! -name 'Makefile'
 egs/parlament/database
 egs/parlament/s5/compute_mfcc_cmvn.sh
 egs/parlament/s5/data
