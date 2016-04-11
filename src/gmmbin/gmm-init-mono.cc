@@ -102,10 +102,10 @@ int main(int argc, char *argv[]) {
         const Matrix<double> &mat = feat_reader.Value();
         for (int32 i = 0; i < mat.NumRows(); i++) {
           count += 1.0;
-          //std::cout <<"Row "<< i <<mat.Row(i) << std::endl;
+          std::cout <<"Row before"<< i <<mat.Row(i) << std::endl;
           var_stats.AddVec2(1.0, mat.Row(i));
           mean_stats.AddVec(1.0, mat.Row(i));
-          //std::cout <<"Row "<< i <<mat.Row(i) << std::endl;
+          std::cout <<"Row after"<< i <<mat.Row(i) << std::endl;
           std::cout << "mean_stats[" << i << "]" <<mean_stats.Data()[1] << " var_stats[" << i << "]" << var_stats.Data()[1] << std::endl;
           //std::cout << mat.NumRows() << std::endl;
         }
