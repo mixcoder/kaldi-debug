@@ -102,11 +102,12 @@ int main(int argc, char *argv[]) {
         const Matrix<double> &mat = feat_reader.Value();
         for (int32 i = 0; i < mat.NumRows(); i++) {
           count += 1.0;
-          std::cout <<"Row before"<< i <<mat.Row(i) << std::endl;
           var_stats.AddVec2(1.0, mat.Row(i));
           mean_stats.AddVec(1.0, mat.Row(i));
-          std::cout <<"Row after"<< i <<mat.Row(i) << std::endl;
-          std::cout << "mean_stats[" << i << "]" <<mean_stats.Data()[1] << " var_stats[" << i << "]" << var_stats.Data()[1] << std::endl;
+          //std::cout <<"Row ["<< i <<"] "<<mat.Row(i) << std::endl;
+          //for(int32 i_ = 0; i_ < dim; i_++) {
+           // std::cout << "mean_stats: [" << i_ << "]" <<mean_stats.Data()[i_] << " var_stats: [" << i_ << "]" << var_stats.Data()[i_] << std::endl;
+          //}
           //std::cout << mat.NumRows() << std::endl;
         }
 
@@ -114,14 +115,25 @@ int main(int argc, char *argv[]) {
       }
 
       if (count == 0) { KALDI_ERR << "no features were seen."; }
+      //for(int32 i_ = 0; i_ < dim; i_++) {
+      // std::cout << "mean_stats: [" << i_ << "]" <<mean_stats.Data()[i_] << " var_stats: [" << i_ << "]" << var_stats.Data()[i_] << std::endl;
+      //}
+      //std::cout<<"count_rows_for_all_files: "<<count<<std::endl;
       var_stats.Scale(1.0/count);
       mean_stats.Scale(1.0/count);
+      //for(int32 i_ = 0; i_ < dim; i_++) {
+       //  std::cout << "mean_stats_scale: [" << i_ << "]" <<mean_stats.Data()[i_] << " var_stats_scale: [" << i_ << "]" << var_stats.Data()[i_] << std::endl;
+      //}
       var_stats.AddVec2(-1.0, mean_stats);
       if (var_stats.Min() <= 0.0)
         KALDI_ERR << "bad variance";
       var_stats.InvertElements();
       glob_inv_var.CopyFromVec(var_stats);
       glob_mean.CopyFromVec(mean_stats);
+      //std::cout <<"Dim: "<<glob_mean.Dim() << std::endl;
+      //for(int32 i_ = 0; i_ < dim; i_++) {
+    //	  std::cout << "global_mean_stats: [" << i_ << "]" <<glob_mean.Data()[i_] << " global_inv_var_stats: [" << i_ << "]" << glob_inv_var.Data()[i_] << std::endl;
+      //}
     }
 
     HmmTopology topo;
@@ -132,8 +144,11 @@ int main(int argc, char *argv[]) {
     const std::vector<int32> &phones = topo.GetPhones();
 
     std::vector<int32> phone2num_pdf_classes (1+phones.back());
-    for (size_t i = 0; i < phones.size(); i++)
+    for (size_t i = 0; i < phones.size(); i++){
+    	//std::cout<<"phone["<< i <<"]: "<<phones[i]<<std::endl;
       phone2num_pdf_classes[phones[i]] = topo.NumPdfClasses(phones[i]);
+      //std::cout<<"phone2num["<< phones[i] <<"]: "<<topo.NumPdfClasses(phones[i])<<std::endl;
+    }
 
     // Now the tree [not really a tree at this point]:
     ContextDependency *ctx_dep = NULL;
