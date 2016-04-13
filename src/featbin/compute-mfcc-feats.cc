@@ -171,11 +171,16 @@ int main(int argc, char *argv[]) {
         Vector<BaseFloat> mean(features.NumCols());
         mean.AddRowSumMat(1.0, features);
         mean.Scale(1.0 / features.NumRows());
-        for (int32 i = 0; i < features.NumRows(); i++)
+        for (int32 i = 0; i < features.NumRows(); i++){
           features.Row(i).AddVec(-1.0, mean);
+        	//std::cout<<"feature: "<<features.Row(i)<<std::endl;
+        }
       }
       if (output_format == "kaldi") {
-        kaldi_writer.Write(utt, features);
+    	  //for (int32 i = 0; i < features.NumRows(); i++){
+    	  //        std::cout<<"feature: "<<features.Row(i)<<std::endl;}
+    	  kaldi_writer.Write(utt, features);
+
       } else {
         std::pair<Matrix<BaseFloat>, HtkHeader> p;
         p.first.Resize(features.NumRows(), features.NumCols());

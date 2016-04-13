@@ -1,0 +1,65 @@
+﻿Kaldi používateľská príručka: popis zdrojových kódov
+
+1. Argument príkazového riadku
+
+Pre zápis
+"-" standard output. 
+"b" (binary) means write in binary mode (currently unnecessary as it's always the default). 
+"t" (text) means write in text mode. 
+"f" (flush) means flush the stream after each write operation.
+"nf" (no-flush) means don't flush the stream after each write operation (would currently be pointless, but calling code can change the default). 
+"p" means permissive mode, which affects "scp:" wspecifiers where the scp file is missing some entries: the "p" option will cause it to silently not write anything for these files, and report no error. 
+Pre čítanie
+"-" standard input. 
+"o" (once) is the user's way of asserting to the RandomAccessTableReader code that each key will be queried only once. This stops it from having to keep already-read objects in memory just in case they are needed again. 
+"p" (permissive) instructs the code to ignore errors and just provide what data it can; invalid data is treated as not existing. In scp files, this means that a query to HasKey() forces the load of the corresponding file, so the code can know to return false if the file is corrupt. In archives, this option stops exceptions from being raised if the archive is corrupted or truncated (it will just stop reading at that point). 
+"s" (sorted) instructs the code that the keys in an archive being read are in sorted string order. For RandomAccessTableReader, this means that when HasKey() is called for some key not in the archive, it can return false as soon as it encounters a "higher" key; it won't have to read till the end. 
+"cs" (called-sorted) instructs the code that the calls to HasKey() and Value() will be in sorted string order. Thus, if one of these functions is called for some string, the reading code can discard the objects for lower-numbered keys. This saves memory. In effect, "cs" represents the user's assertion that some other archive that the program may be iterating over, is itself sorted. 
+
+2.Generovanie MFCC
+
+compute-mfcc-feats scp:waw.scp ark,t,scp:mfcc.ark,mfcc.scp
+rspecifier- scp:waw.scp
+wspecifier – ark,t,scp:mfcc.ark,mfcc.scp
+
+scp – “script file”: obsahuje cestu k jednotlivým nahrávkam a tiež miesto čítania z archívu fseek() na pozíciu 23 a 10753 (č. riadkov v matici)
+
+speaker000-par001s0030 /home/vavrek/kaldi debug/egs/parlament/s5/data/mfcc_train/raw_mfcc_train.1.ark:23
+speaker001-par004s0011 /home/vavrek/kaldi-debug/egs/parlament/s5/data/mfcc_train/raw_mfcc_train.1.ark:10753
+
+ark – “archive”: archív v textovom móde ak je uvedený argument t, implicitne nastavené na binárny mód
+
+speaker000-par001s0030  [
+  14.10826 1.689854 2.631049 1.615903 -7.061874 -5.217402 -14.75945 -9.99846 1.162343 1.751029 14.06324 2.120507 -2.416143 
+  13.88153 1.778843 3.930727 3.530488 -0.6994777 1.746091 -13.97855 -8.412409 -8.900908 -4.976469 3.917657 -8.219433 -5.273274 
+  13.70978 -1.245511 -0.3259394 2.909337 -9.779212 -3.678674 -5.82101 -4.553367 -6.346621 -0.783889 -10.18138 -3.589136 -3.022692 
+  13.12408 -8.44072 -2.119956 5.159504 -14.26084 -0.8716287 -8.602939 -11.09097 -13.45098 -9.396022 -10.84965 -1.33166 -0.8408574 
+  13.51634 -12.8888 0.5638425 14.02303 -15.8473 5.804669 -6.862232 -22.34762 -1.288737 6.291987 -11.12249 -1.468823 -11.78562 ]
+speaker001-par004s0011  [
+  12.06458 -2.333197 7.109605 -2.344448 -4.66145 4.072924 -11.30209 -8.290196 -9.794406 -14.6836 -4.018123 0.3603373 -4.332555 
+  12.2433 -2.650045 6.044868 -4.017526 -9.199212 -7.695528 -3.449128 -5.392704 -10.16296 -0.2477354 -8.551126 2.979215 0.1277829 
+  12.51178 -3.844823 4.488879 -1.087927 -0.1987881 2.168946 -6.737176 -2.354375 -10.25441 5.24179 9.674825 8.508047 9.885266 
+  12.65401 -0.9313743 8.635545 5.32293 2.081174 -2.121343 -9.746995 -16.85775 -15.4945 0.7855694 5.374227 -0.01060295 1.169994 
+  12.60024 -2.222284 9.831885 -2.339098 -2.343368 -4.274204 -12.12814 -12.39186 -10.77977 -2.046569 10.29807 7.976638 2.468218 ]
+
+
+3.Výpočet CMVN
+compute-cmvn-stats --spk2utt=ark:data/train/spk2utt scp:mfcc.scp ark,t,scp:cmvn.ark,cmvn.scp
+
+- v steps/make_mfcc.sh je použitá voľba --use-energy=false  
+
+-realizuje výpočet globálnej strednej hodnoty a variancie pre každého rozprávača, teda dvojicu speaker- utterance (speaker000-par001s0030)
+-ak je zadaná voľba –-spk2utt tak výpošet mean a var sa realizuje pre daného rečníka a všetky nahrávky ktoré mu prislúchajjú speaker – utterance1 utterance2      
+(speaker000-par001s0030 par001s0031)
+-1. riadok: hodnoty reprezentujú sumu hodnôt prvkov MFCC matice pre každý stĺpec (1-13) sum(MFCC(:,:)), 14-ty prvok definuje počet riadkov MFCC matice 
+-2.riadok: druhá mocnina  hodnôt prvkov MFCC matice pre každý stĺpec (1-13) sum(MFCC(:,:).^2)
+
+speaker000  [
+  14874.82 4127.407 150.2739 3767.68 -2556.519 -12144.36 -7377.112 -15112.51 -5437.99 -8100.915 -6496.962 -5440.803 -5942.836 814 
+  276232.1 82202.37 123486 211474.4 76469.22 345183.5 197318.6 421583.8 154372.6 164476.3 156354.3 168044.1 135945.8 0 ]
+speaker001  [
+  4998.798 2292.822 -370.6259 1696.672 -897.5402 -443.0184 -28.96256 -3896.802 -817.6271 -2986.011 -1319.419 1772.494 -724.1689 304 
+  84542.13 72147.26 27536.28 22233.31 28293.79 21432.88 52587.16 87120.75 47442.33 63314.53 50690.28 33605.21 38872.65 0 ]
+
+
+

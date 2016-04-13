@@ -110,7 +110,7 @@ int main(int argc, char *argv[]) {
               num_err++;
               continue;
             }
-            const Matrix<BaseFloat> &feats = feat_reader.Value(utt); std::cout<<"feat["<<utt<<"]: "<<feat_reader.Value(utt)<<std::endl;
+            const Matrix<BaseFloat> &feats = feat_reader.Value(utt); //std::cout<<"feat["<<utt<<"]: "<<feat_reader.Value(utt)<<std::endl;
             if (!is_init) {
               InitCmvnStats(feats.NumCols(), &stats);
               is_init = true;
