@@ -62,4 +62,87 @@ speaker001  [
   84542.13 72147.26 27536.28 22233.31 28293.79 21432.88 52587.16 87120.75 47442.33 63314.53 50690.28 33605.21 38872.65 0 ]
 
 
+4. Príprava jazykového modela a slovníka do kaldi formátu
+
+
+
+
+
+5. Trénovanie monofónového GMM modelu (flat start)
+steps/train_mono.sh --nj 1 --cmd run.pl data/train data/lang_train exp/mono;
+
+-najprv sa spustí gmm-init-mono
+
+gmm-init-mono --shared-phones=data/lang_train/phones/sets.int '--train-feats=ark,s,cs:apply-cmvn  --utt2spk=ark:data/train/split1/1/utt2spk scp:data/train/split1/1/cmvn.scp scp:data/train/split1/1/feats.scp ark:- | add-deltas ark:- ark:- | subset-feats --n=10 ark:- ark:-|' data/lang_train/topo 39 exp/mono/0.mdl exp/mono/tree 
+
+apply-cmvn --utt2spk=ark:data/train/split1/1/utt2spk scp:data/train/split1/1/cmvn.scp scp:data/train/split1/1/feats.scp ark:- 
+-aplikuje CMVN na všetky utt
+
+add-deltas ark:- ark:- 
+-pridá delda a delta-delta koeficienty
+
+subset-feats --n=10 ark:- ark:- 
+-kopíruje prvých 10 utt (MFCC matíc)
+
+ 	
+-výpočet glob_inv_var a glob_mean (globálna hodnoda strednej hodnoty pre všetky matice MFCC a inverznej variancie so škálovaním 1/počet riadkov všetkých matíc: var_stats.Scale(1.0/count); mean_stats.Scale(1.0/count))
+
+-nacitanie topológie zo súboru data/lang_train/topo
+-príklad topológie
+ <Topology>
+ <TopologyEntry>
+ <ForPhones> 1 2 3 4 5 6 7 8 </ForPhones>
+ <State> 0 <PdfClass> 0
+ <Transition> 0 0.5
+ <Transition> 1 0.5
+ </State> 
+ <State> 1 <PdfClass> 1 
+ <Transition> 1 0.5
+ <Transition> 2 0.5
+ </State>  
+ <State> 2 <PdfClass> 2
+ <Transition> 2 0.5
+ <Transition> 3 0.5
+ </State>   
+ <State> 3
+ </State>   
+ </TopologyEntry>
+ </Topology>
+
+-vytvorí sa objekt triedy HmmTopology : this is the way the user specifies to the toolkit the topology of the HMMs the phones
+
+HmmTopology topo;
+
+extrahovanie foném typu int
+const std::vector<int32> &phones = topo.GetPhones();	
+phone[0]: 1
+phone[1]: 2
+…
+phone[51]: 52
+
+priradenie počtu pdf tried pre každú fonému
+phone2num_pdf_classes[phones[i]] = topo.NumPdfClasses(phones[i]);
+phone2num[1]: 5
+phone2num[2]: 5
+phone2num[3]: 5
+phone2num[4]: 5
+phone2num[5]: 5
+phone2num[6]: 5
+phone2num[7]: 3
+...
+phone2num[52]: 3
+If the pdf-class for some HMM state is set to the constant kNoPdf = -1, then the HMM state is nonemitting (it has no associated pdf).
+The set of pdf-classes for a particular prototype HMM is expected to start from zero and be contiguous (e.g. 0, 1, 2).
+
+
+
+
+
+
+
+
+
+
+
+6. Trénovanie trifónového GMM/HMM modelu
 

@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
         "e.g.: \n"
         " gmm-init-mono topo 39 mono.mdl mono.tree\n";
 
-    bool binary = true;
+    bool binary = false;
     std::string train_feats;
     std::string shared_phones_rxfilename;
     BaseFloat perturb_factor = 0.0;
