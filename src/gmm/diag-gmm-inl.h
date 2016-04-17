@@ -70,7 +70,10 @@ void DiagGmm::SetInvVarsAndMeans(const MatrixBase<Real> &invvars,
   inv_vars_.CopyFromMat(invvars);
   Matrix<Real> new_means_invvars(means);
   new_means_invvars.MulElements(invvars);
+  	  //std::cout<<"num_rows:"<<new_means_invvars.NumRows()<<std::endl;
+  	  //std::cout<<"num_cols:"<<new_means_invvars.NumCols()<<std::endl;
   means_invvars_.CopyFromMat(new_means_invvars);
+  	  //std::cout<<"gmm 0:"<<means_invvars_.Row(0)<<std::endl;
   valid_gconsts_ = false;
 }
 

@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
       SequentialBaseFloatMatrixReader matrix_reader(rspecifier);
       for (; !matrix_reader.Done(); matrix_reader.Next())
         tot += matrix_reader.Value().NumRows();
-      std::cout << tot << std::endl;
+      //std::cout << tot << std::endl;
     }
     return 0;
   } catch(const std::exception &e) {

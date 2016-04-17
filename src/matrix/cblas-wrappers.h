@@ -343,7 +343,9 @@ inline void mul_elements(
     const double *a,
     double *b) { // does b *= a, elementwise.
   double c1, c2, c3, c4;
+
   MatrixIndexT i;
+
   for (i = 0; i + 4 <= dim; i += 4) {
     c1 = a[i] * b[i];
     c2 = a[i+1] * b[i+1];
@@ -364,8 +366,11 @@ inline void mul_elements(
     float *b) { // does b *= a, elementwise.
   float c1, c2, c3, c4;
   MatrixIndexT i;
+  //for(i=0;i<dim;i++) std::cout<<"InvVar["<<i<<"] "<<a[i]<<std::endl;
+  //for(i=0;i<dim;i++) std::cout<<"Mean["<<i<<"] "<<b[i]<<std::endl;
   for (i = 0; i + 4 <= dim; i += 4) {
-    c1 = a[i] * b[i];
+    //std::cout<<"c1 "<<c1<<std::endl;
+	c1 = a[i] * b[i];
     c2 = a[i+1] * b[i+1];
     c3 = a[i+2] * b[i+2];
     c4 = a[i+3] * b[i+3];

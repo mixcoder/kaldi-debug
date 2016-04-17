@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
 
     MfccOptions mfcc_opts;
 
-    bool subtract_mean = false;
+    bool subtract_mean = true;
     BaseFloat vtln_warp = 1.0;
     std::string vtln_map_rspecifier;
     std::string utt2spk_rspecifier;

@@ -79,7 +79,6 @@ int main(int argc, char *argv[]) {
       exit(1);
     }
 
-
     std::string topo_filename = po.GetArg(1);
     int dim = atoi(po.GetArg(2).c_str());
     KALDI_ASSERT(dim> 0 && dim < 10000);
@@ -147,33 +146,44 @@ int main(int argc, char *argv[]) {
     for (size_t i = 0; i < phones.size(); i++){
     	//std::cout<<"phone["<< i <<"]: "<<phones[i]<<std::endl;
       phone2num_pdf_classes[phones[i]] = topo.NumPdfClasses(phones[i]);
-      //std::cout<<"phone2num["<< phones[i] <<"]: "<<topo.NumPdfClasses(phones[i])<<std::endl;
+      //std::cout<<"phone2num_pdf_classes["<< phones[i] <<"]: "<<topo.NumPdfClasses(phones[i])<<std::endl;
     }
 
     // Now the tree [not really a tree at this point]:
     ContextDependency *ctx_dep = NULL;
+    //std::cout<<"shared_phones_rxfilename"<<shared_phones_rxfilename<<std::endl;
     if (shared_phones_rxfilename == "") {  // No sharing of phones: standard approach.
-      ctx_dep = MonophoneContextDependency(phones, phone2num_pdf_classes);
+    	ctx_dep = MonophoneContextDependency(phones, phone2num_pdf_classes);
     } else {
       std::vector<std::vector<int32> > shared_phones;
       ReadSharedPhonesList(shared_phones_rxfilename, &shared_phones);
+      //for(int k=0; k<shared_phones.size(); ++k){
+    //	  for (int l=0; l<shared_phones[k].size(); l++){
+    //		  std::cout<<"shared_phones:["<<k<<"]"<< "["<<l<<"]: "<<shared_phones[k][l]<<std::endl;
+    //	  }
+     // }
+
       // ReadSharedPhonesList crashes on error.
       ctx_dep = MonophoneContextDependencyShared(shared_phones, phone2num_pdf_classes);
     }
 
     int32 num_pdfs = ctx_dep->NumPdfs();
-
+    //std::cout<<"num_pdfs"<<num_pdfs<<std::endl;
     AmDiagGmm am_gmm;
     DiagGmm gmm;
     gmm.Resize(1, dim);
     {  // Initialize the gmm.
       Matrix<BaseFloat> inv_var(1, dim);
       inv_var.Row(0).CopyFromVec(glob_inv_var);
+      	  //std::cout<<"inv_var: "<<inv_var.Row(0)<<std::endl;
       Matrix<BaseFloat> mu(1, dim);
       mu.Row(0).CopyFromVec(glob_mean);
+      	  //std::cout<<"mu: "<<mu.Row(0)<<std::endl;
       Vector<BaseFloat> weights(1);
       weights.Set(1.0);
+      	  //for(int32 i_ = 0; i_ < dim; i_++) std::cout<<"weights["<<i_<<"]"<<weights.Data()[i_]<<std::endl;
       gmm.SetInvVarsAndMeans(inv_var, mu);
+
       gmm.SetWeights(weights);
       gmm.ComputeGconsts();
     }
@@ -182,6 +192,7 @@ int main(int argc, char *argv[]) {
       am_gmm.AddPdf(gmm);
 
     if (perturb_factor != 0.0) {
+    	//std::cout<<"perturb_factor != 0.0"<<std::endl;
       for (int i = 0; i < num_pdfs; i++)
         am_gmm.GetPdf(i).Perturb(perturb_factor);
     }

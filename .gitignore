@@ -772,4 +772,5 @@ src/util/parse-options.o
 src/util/simple-io-funcs.o
 src/util/simple-options.o
 src/util/text-utils.o
+src/util/parse-options-test
 tools/
