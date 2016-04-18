@@ -181,7 +181,7 @@ int main(int argc, char *argv[]) {
       	  //std::cout<<"mu: "<<mu.Row(0)<<std::endl;
       Vector<BaseFloat> weights(1);
       weights.Set(1.0);
-      	  //for(int32 i_ = 0; i_ < dim; i_++) std::cout<<"weights["<<i_<<"]"<<weights.Data()[i_]<<std::endl;
+      	  //for(int32 x = 0; x < dim; x++) std::cout<<"weights["<<x<<"]"<<weights.Data()[x]<<std::endl;
       gmm.SetInvVarsAndMeans(inv_var, mu);
 
       gmm.SetWeights(weights);

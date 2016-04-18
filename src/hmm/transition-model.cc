@@ -86,8 +86,10 @@ void TransitionModel::ComputeDerived() {
       num_pdfs_ = std::max(num_pdfs_, 1+pdf);
       const HmmTopology::HmmState &state = topo_.TopologyForPhone(phone)[hmm_state];
       int32 my_num_ids = static_cast<int32>(state.transitions.size());
+      	  std::cout<<"phone:"<<phone<<" hmm_state:"<<hmm_state<<" pdf:"<<pdf<<" num_transitions["<<tstate<<"]:"<<my_num_ids<<std::endl;
       cur_transition_id += my_num_ids;  // # trans out of this state.
     }
+    std::cout<<"cur_transition_id["<<tstate<<"]"<<cur_transition_id<<std::endl;
   }
 
   id2state_.resize(cur_transition_id);   // cur_transition_id is #transition-ids+1.
@@ -105,6 +107,7 @@ void TransitionModel::InitializeProbs() {
     const HmmTopology::TopologyEntry &entry = topo_.TopologyForPhone(triple.phone);
     KALDI_ASSERT(static_cast<size_t>(triple.hmm_state) < entry.size());
     BaseFloat prob = entry[triple.hmm_state].transitions[trans_index].second;
+    	std::cout<<"prob["<<trans_id<<"]: "<<prob<<std::endl;
     if (prob <= 0.0)
       KALDI_ERR << "TransitionModel::InitializeProbs, zero "
           "probability [should remove that entry in the topology]";

@@ -174,7 +174,7 @@ ConstantEventMap := "CE" <numeric pdf-id>
 SplitEventMap := "SE" <key-to-split-on> "[" yes-value-list "]" "{" EventMap EventMap "}"
 TableEventMap := "TE" <key-to-split-on> <table-size> "(" EventMapList ")"
 
-ontextDependency 1 0 ToPdf TE 0 53 ( NULL TE -1 5 ( CE 0 CE 1 CE 2 CE 3 CE 4 ) 
+ContextDependency 1 0 ToPdf TE 0 53 ( NULL TE -1 5 ( CE 0 CE 1 CE 2 CE 3 CE 4 ) 
 TE -1 5 ( CE 5 CE 6 CE 7 CE 8 CE 9 ) 
 TE -1 5 ( CE 10 CE 11 CE 12 CE 13 CE 14 ) 
 TE -1 5 ( CE 15 CE 16 CE 17 CE 18 CE 19 ) 
@@ -213,14 +213,115 @@ mu:  [ -1.93785e-08 5.20363e-08 -2.03184e-09 7.16105e-08 2.64139e-08 -4.16317e-0
 
       gmm.SetInvVarsAndMeans(inv_var, mu);
 -nainicializuje strednú hodnotu a varianciu pre všetky PDFs
-inv_var[i] * mu[i]
+dim=39; for (int i=0; i<dim; i++) inv_var[i] * mu[i]
 <MEANS_INVVARS>  [
   -2.386852e-10 3.326984e-10 -1.389661e-11 3.115239e-10 1.994691e-10 -2.275714e-10 2.333496e-10 1.819253e-11 -2.364259e-10 -1.034045e-10 2.512991e-10 1.8817e-10 3.971067e-10 -0.0001222068 0.001156897 0.001351406 0.0007475433 0.001003082 -4.987351e-05 0.0004661482 -0.0005082276 -0.0009838532 7.265755e-05 -0.0002950226 5.439135e-05 -0.0002777049 -0.0007697208 0.001038217 -0.0001801743 -0.0009340189 0.0005688321 0.0006799264 0.0001091349 0.0005244361 -0.0003576949 -0.000899711 0.0002731017 -0.0001946728 -0.0003293207 ]
 
       gmm.SetWeights(weights);
+-nastaví váhy na 1
+
       gmm.ComputeGconsts();
+- precomputed constant terms in the likelihood
+- equals log(weight) - 0.5 * (log det(var) + mean*mean*inv(var))
+
+
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+Generovanie modelu prechodov
+// Now the transition model:
+  TransitionModel trans_model(*ctx_dep, topo);
+
+ 	ComputeTriples(ctx_dep);
+- definuje trojicu čísel pre danú fonému, hmm stav a číslo PDF
+- Triple(phone, hmm_state, pdf)
+
+1 0 0 
+1 1 1 
+1 2 2 
+1 3 3 
+1 4 4 
+2 0 5 
+2 1 6 
+2 2 7 
+2 3 8 
+2 4 9 
+3 0 10 
+3 1 11 
+3 2 12 
+3 3 13 
+3 4 14 
+4 0 15 
+4 1 16 
+4 2 17 
+4 3 18 
+4 4 19 
+5 0 20 
+5 1 21 
+5 2 22 
+5 3 23 
+5 4 24 
+6 0 25 
+6 1 26 
+6 2 27 
+6 3 28 
+6 4 29 
+7 0 30 
+7 1 31 
+7 2 32 
+8 0 33 
+8 1 34 
+8 2 35 
+…
+52 0 165 
+52 1 166 
+52 2 167 
+
+	ComputeDerived();
+-na základe inicializačnej topológie (topo) a trojice (triple) definuje počet prechodov
+
+phone:1 hmm_state:0 pdf:0 num_transitions[1]:4
+cur_transition_id[1]5
+phone:1 hmm_state:1 pdf:1 num_transitions[2]:4
+cur_transition_id[2]9
+phone:1 hmm_state:2 pdf:2 num_transitions[3]:4
+cur_transition_id[3]13
+phone:1 hmm_state:3 pdf:3 num_transitions[4]:4
+cur_transition_id[4]17
+phone:1 hmm_state:4 pdf:4 num_transitions[5]:2
+cur_transition_id[5]19
+phone:2 hmm_state:0 pdf:5 num_transitions[6]:4
+cur_transition_id[6]23
+phone:2 hmm_state:1 pdf:6 num_transitions[7]:4
+cur_transition_id[7]27
+phone:2 hmm_state:2 pdf:7 num_transitions[8]:4
+cur_transition_id[8]31
+phone:2 hmm_state:3 pdf:8 num_transitions[9]:4
+cur_transition_id[9]35
+phone:2 hmm_state:4 pdf:9 num_transitions[10]:2
+cur_transition_id[10]37
+…
+phone:52 hmm_state:0 pdf:165 num_transitions[166]:2
+cur_transition_id[166]381
+phone:52 hmm_state:1 pdf:166 num_transitions[167]:2
+cur_transition_id[167]383
+phone:52 hmm_state:2 pdf:167 num_transitions[168]:2
+cur_transition_id[168]385
+
+	InitializeProbs();
+	Check();
 
 
 
