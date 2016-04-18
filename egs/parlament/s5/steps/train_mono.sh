@@ -76,9 +76,10 @@ if [ $stage -le -3 ]; then
     $dir/0.mdl $dir/tree || exit 1;
 fi
 
-: <<'END'
+
 numgauss=`gmm-info --print-args=false $dir/0.mdl | grep gaussians | awk '{print $NF}'`
 incgauss=$[($totgauss-$numgauss)/$max_iter_inc] # per-iter increment for #Gauss
+#echo $numgauss $totgauss $incgauss $max_iter_inc
 
 if [ $stage -le -2 ]; then
   echo "$0: Compiling training graphs"
@@ -87,7 +88,7 @@ if [ $stage -le -2 ]; then
     "ark:sym2int.pl --map-oov $oov_sym -f 2- $lang/words.txt < $sdata/JOB/text|" \
     "ark:|gzip -c >$dir/fsts.JOB.gz" || exit 1;
 fi
-
+: <<'END'
 if [ $stage -le -1 ]; then
   echo "$0: Aligning data equally (pass 0)"
   $cmd JOB=1:$nj $dir/log/align.0.JOB.log \

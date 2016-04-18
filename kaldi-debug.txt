@@ -71,7 +71,9 @@ speaker001  [
 5. Trénovanie monofónového GMM modelu (flat start)
 steps/train_mono.sh --nj 1 --cmd run.pl data/train data/lang_train exp/mono;
 
+####################################################################
 -najprv sa spustí gmm-init-mono
+####################################################################
 
 gmm-init-mono --shared-phones=data/lang_train/phones/sets.int '--train-feats=ark,s,cs:apply-cmvn  --utt2spk=ark:data/train/split1/1/utt2spk scp:data/train/split1/1/cmvn.scp scp:data/train/split1/1/feats.scp ark:- | add-deltas ark:- ark:- | subset-feats --n=10 ark:- ark:-|' data/lang_train/topo 39 exp/mono/0.mdl exp/mono/tree 
 
@@ -290,7 +292,7 @@ Generovanie modelu prechodov
 52 2 167 
 
 	ComputeDerived();
--na základe inicializačnej topológie (topo) a trojice (triple) definuje počet prechodov
+-na základe inicializačnej topológie (topo) a trojice (fonéma, hmm stav, pdf id) definuje počet prechodov
 
 phone:1 hmm_state:0 pdf:0 num_transitions[1]:4
 cur_transition_id[1]5
@@ -321,14 +323,67 @@ phone:52 hmm_state:2 pdf:167 num_transitions[168]:2
 cur_transition_id[168]385
 
 	InitializeProbs();
+-nainicializuje pole prob na hodhoty pravdepodobností prechodov medzi stavmi podľa topo
+prob[1]: 0.25
+prob[2]: 0.25
+prob[3]: 0.25
+prob[4]: 0.25
+prob[5]: 0.25
+prob[6]: 0.25
+prob[7]: 0.25
+prob[8]: 0.25
+prob[9]: 0.25
+prob[10]: 0.25
+prob[11]: 0.25
+prob[12]: 0.25
+prob[13]: 0.25
+prob[14]: 0.25
+prob[15]: 0.25
+prob[16]: 0.25
+prob[17]: 0.75
+…
+prob[380]: 0.25
+prob[381]: 0.75
+prob[382]: 0.25
+prob[383]: 0.75
+prob[384]: 0.25
+
+-následne sa vypočíta logaritmus Log(prob)
+
 	Check();
 
+####################################################################
+-spustenie compile-train-graphs
+####################################################################
+-vytvorí graf
 
+compile-train-graphs exp/mono/tree exp/mono/0.mdl data/lang_train/L.fst 'ark:sym2int.pl --map-oov 1 -f 2- data/lang_train/words.txt < data/train/split1/1/text|' 'ark:|gzip -c >exp/mono/fsts.1.gz' 
 
+-extrahuje utterances a prepisy zo slovníka
 
+std::vector<std::string> keys;
+std::vector<std::vector<int32> > transcripts;
 
-
-
+speaker000-par001s0030
+45332 30302 14214 36179 42862 117 20427 19022 27848 54 54 250 3575 34527 3574 16205 
+speaker001-par004s0011
+54 43790 25015 36917 18278 54 
+speaker002-par007s0008
+54 2176 11010 22250 45332 34007 41461 24041 39841 16432 
+speaker003-par010s0006
+36179 21162 28166 18369 54 27621 57 24103 45422 
+speaker004-par013s0002
+8964 11537 12910 7806 18369 30863 31307 54 57 43237 36584 17882 33312 
+speaker005-par016s0011
+24426 34928 6725 54 479 
+speaker006-par019s0013
+8348 34719 28097 25241 39285 6623 
+speaker007-par022s0004
+54 43617 39285 18131 28441 31255 28936 39285 18131 28441 31255 28936 24819 5968 29766 57 12056 54 
+speaker008-par025s0003
+54 54 39105 9262 9257 54 23216 39090 117 32632 23695 40764 12239 36179 29366 33373 
+speaker009-par028s0009
+39108 28097 25241 18131 28441 31255 28936 
 
 
 

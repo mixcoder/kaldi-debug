@@ -132,12 +132,15 @@ int main(int argc, char *argv[]) {
         for (size_t i = 0; i < fsts.size(); i++) {
           if (fsts[i]->Start() != fst::kNoStateId) {
             num_succeed++;
+            	//std::cout<<keys[i]<<std::endl;
+            	//for(int j=0; j<transcripts[i].size();j++) std::cout<<transcripts[i][j]<<" ";
             fst_writer.Write(keys[i], *(fsts[i]));
           } else {
             KALDI_WARN << "Empty decoding graph for utterance "
                        << keys[i];
             num_fail++;
           }
+          //std::cout<<std::endl;
         }
         DeletePointers(&fsts);
       }
