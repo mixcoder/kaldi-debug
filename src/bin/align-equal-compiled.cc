@@ -93,6 +93,8 @@ int main(int argc, char *argv[]) {
           std::vector<int32> aligned_seq, words;
           StdArc::Weight w;
           GetLinearSymbolSequence(path, &aligned_seq, &words, &w);
+          	  //std::cout<<key<<std::endl;
+          	  //for(int j=0;j<aligned_seq.size();j++) std::cout<<"ali:"<<aligned_seq[j]<<" word:"<<words[j]<<std::endl;
           KALDI_ASSERT(aligned_seq.size() == features.NumRows());
           alignment_writer.Write(key, aligned_seq);
           done++;
@@ -100,6 +102,7 @@ int main(int argc, char *argv[]) {
           KALDI_WARN << "AlignEqual: did not align utterence " << key;
           error++;
         }
+        	//std::cout<<std::endl;
       }
     }
 

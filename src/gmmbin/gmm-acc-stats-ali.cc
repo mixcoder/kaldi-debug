@@ -93,8 +93,10 @@ int main(int argc, char *argv[]) {
         BaseFloat tot_like_this_file = 0.0;
 
         for (size_t i = 0; i < alignment.size(); i++) {
-          int32 tid = alignment[i],  // transition identifier.
+        		//std::cout<<"ali["<<i<<"]: "<<alignment[i];
+        	int32 tid = alignment[i],  // transition identifier.
               pdf_id = trans_model.TransitionIdToPdf(tid);
+        		//std::cout<<" pdf_id: "<<pdf_id<<std::endl;
           trans_model.Accumulate(1.0, tid, &transition_accs);
           tot_like_this_file += gmm_accs.AccumulateForGmm(am_gmm, mat.Row(i),
                                                           pdf_id, 1.0);

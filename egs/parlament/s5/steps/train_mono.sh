@@ -88,13 +88,12 @@ if [ $stage -le -2 ]; then
     "ark:sym2int.pl --map-oov $oov_sym -f 2- $lang/words.txt < $sdata/JOB/text|" \
     "ark:|gzip -c >$dir/fsts.JOB.gz" || exit 1;
 fi
-: <<'END'
+
 if [ $stage -le -1 ]; then
   echo "$0: Aligning data equally (pass 0)"
   $cmd JOB=1:$nj $dir/log/align.0.JOB.log \
-    align-equal-compiled "ark:gunzip -c $dir/fsts.JOB.gz|" "$feats" ark,t:-  \| \
-    gmm-acc-stats-ali --binary=true $dir/0.mdl "$feats" ark:- \
-    $dir/0.JOB.acc || exit 1;
+    align-equal-compiled "ark:gunzip -c $dir/fsts.JOB.gz|" "$feats" ark,t:- \| \
+    gmm-acc-stats-ali --binary=false $dir/0.mdl "$feats" ark:- $dir/0.JOB.acc || exit 1;
 fi
 
 # In the following steps, the --min-gaussian-occupancy=3 option is important, otherwise
@@ -105,7 +104,7 @@ if [ $stage -le 0 ]; then
     $dir/0.mdl "gmm-sum-accs - $dir/0.*.acc|" $dir/1.mdl 2> $dir/log/update.0.log || exit 1;
   rm $dir/0.*.acc
 fi
-
+: <<'END'
 
 beam=6 # will change to 10 below after 1st pass
 # note: using slightly wider beams for WSJ vs. RM.

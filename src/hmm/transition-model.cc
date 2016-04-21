@@ -351,8 +351,9 @@ void TransitionModel::MleUpdate(const Vector<double> &stats,
   BaseFloat count_sum = 0.0, objf_impr_sum = 0.0;
   int32 num_skipped = 0, num_floored = 0;
   KALDI_ASSERT(stats.Dim() == NumTransitionIds()+1);
-  for (int32 tstate = 1; tstate <= NumTransitionStates(); tstate++) {
-    int32 n = NumTransitionIndices(tstate);
+  for (int32 tstate = 1; tstate <= NumTransitionStates(); tstate++) {// from 0 to 168
+    int32 n = NumTransitionIndices(tstate);//4 or 2
+    	//std::cout<<"tstate: "<<tstate<<" indeces:"<<n<<std::endl;
     KALDI_ASSERT(n>=1);
     if (n > 1) {  // no point updating if only one transition...
       Vector<double> counts(n);

@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
         "Usage:  gmm-est [options] <model-in> <stats-in> <model-out>\n"
         "e.g.: gmm-est 1.mdl 1.acc 2.mdl\n";
 
-    bool binary_write = true;
+    bool binary_write = false;
     MleTransitionUpdateConfig tcfg;
     MleDiagGmmOptions gmm_opts;
     int32 mixup = 0;
@@ -73,6 +73,7 @@ int main(int argc, char *argv[]) {
 
     kaldi::GmmFlagsType update_flags =
         StringToGmmFlags(update_flags_str);
+    //std::cout<<"update_flags: "<<update_flags<<std::endl;
 
     std::string model_in_filename = po.GetArg(1),
         stats_filename = po.GetArg(2),

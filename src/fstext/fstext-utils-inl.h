@@ -188,6 +188,7 @@ bool GetLinearSymbolSequence(const Fst<Arc> &fst,
   vector<I> olabel_seq;
 
   StateId cur_state = fst.Start();
+  	  //std::cout<<"cur-STATE:"<<cur_state<<std::endl;
   if (cur_state == kNoStateId) {  // empty sequence.
     if (isymbols_out != NULL) isymbols_out->clear();
     if (osymbols_out != NULL) osymbols_out->clear();
