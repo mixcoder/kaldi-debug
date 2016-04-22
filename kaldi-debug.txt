@@ -121,6 +121,30 @@ subset-feats --n=10 ark:- ark:-
  </TopologyEntry>
  </Topology>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 -vytvorí sa objekt triedy HmmTopology : this is the way the user specifies to the toolkit the topology of the HMMs the phones
 
 HmmTopology topo;
@@ -447,7 +471,19 @@ Usage:  gmm-acc-stats-ali [options] <model-in> <feature-rspecifier> "
         "<alignments-rspecifier> <stats-out>\n"
 -------------------------------------------------------------------------------------------------------------------
 
-gmm-acc-stats-ali --binary=false exp/mono/0.mdl 'ark,s,cs:apply-cmvn  --utt2spk=ark:data/train/split1/1/utt2spk scp:data/train/split1/1/cmvn.scp scp:data/train/split1/1/feats.scp ark:- | add-deltas ark:- ark:- |' ark:- exp/mono/0.1.acc 
+gmm-acc-stats-ali --binary=false exp/mono/0.mdl 'ark,s,cs:apply-cmvn --utt2spk=ark:data/train/split1/1/utt2spk scp:data/train/split1/1/cmvn.scp scp:data/train/split1/1/feats.scp ark:- | add-deltas ark:- ark:- |' ark:- exp/mono/0.1.acc 
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
