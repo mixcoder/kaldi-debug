@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
         "Usage:  gmm-est [options] <model-in> <stats-in> <model-out>\n"
         "e.g.: gmm-est 1.mdl 1.acc 2.mdl\n";
 
-    bool binary_write = true;
+    bool binary_write = false;
     MleTransitionUpdateConfig tcfg;
     MleDiagGmmOptions gmm_opts;
     int32 mixup = 0;
@@ -73,7 +73,7 @@ int main(int argc, char *argv[]) {
 
     kaldi::GmmFlagsType update_flags =
         StringToGmmFlags(update_flags_str);
-    //std::cout<<"update_flags: "<<update_flags<<std::endl;
+
 
     std::string model_in_filename = po.GetArg(1),
         stats_filename = po.GetArg(2),
@@ -96,7 +96,7 @@ int main(int argc, char *argv[]) {
       transition_accs.Read(ki.Stream(), binary);
       gmm_accs.Read(ki.Stream(), binary, true);  // true == add; doesn't matter here.
     }
-
+    //std::cout<<"update_flags: "<<update_flags<<std::endl;
     if (update_flags & kGmmTransitions) {  // Update transition model.
       BaseFloat objf_impr, count;
       trans_model.MleUpdate(transition_accs, tcfg, &objf_impr, &count);
@@ -109,6 +109,7 @@ int main(int argc, char *argv[]) {
       BaseFloat objf_impr, count;
       BaseFloat tot_like = gmm_accs.TotLogLike(),
           tot_t = gmm_accs.TotCount();
+      	  //std::cout<<"total_like:"<<tot_like<<" total_num_of_frames:"<<tot_t<<std::endl;
       MleAmDiagGmmUpdate(gmm_opts, gmm_accs, update_flags, &am_gmm,
                          &objf_impr, &count);
       KALDI_LOG << "GMM update: Overall " << (objf_impr/count)
@@ -120,11 +121,19 @@ int main(int argc, char *argv[]) {
 
     if (mixup != 0 || mixdown != 0 || !occs_out_filename.empty()) {
       // get pdf occupation counts
+    	//std::cout<<mixup<<" "<<mixdown<<" "<<occs_out_filename.empty()<<std::endl;
       Vector<BaseFloat> pdf_occs;
       pdf_occs.Resize(gmm_accs.NumAccs());
-      for (int i = 0; i < gmm_accs.NumAccs(); i++)
+      for (int i = 0; i < gmm_accs.NumAccs(); i++){
         pdf_occs(i) = gmm_accs.GetAcc(i).occupancy().Sum();
-
+        //pdf_occs[0]201
+        //pdf_occs[1]222
+        //pdf_occs[2]191
+        //pdf_occs[3]220
+        //...
+        //pdf_occs[167]2
+        //std::cout<<"pdf_occs["<<i<<"]"<<pdf_occs(i)<<std::endl;
+      }
       if (mixdown != 0)
         am_gmm.MergeByCount(pdf_occs, mixdown, power, min_count);
 

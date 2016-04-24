@@ -102,7 +102,7 @@ fi
 if [ $stage -le 0 ]; then
   gmm-est --min-gaussian-occupancy=3  --mix-up=$numgauss --power=$power \
     $dir/0.mdl "gmm-sum-accs - $dir/0.*.acc|" $dir/1.mdl 2> $dir/log/update.0.log || exit 1;
-  rm $dir/0.*.acc
+  #rm $dir/0.*.acc
 fi
 : <<'END'
 

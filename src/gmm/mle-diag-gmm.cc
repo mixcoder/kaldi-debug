@@ -291,6 +291,7 @@ void MleDiagGmmUpdate(const MleDiagGmmOptions &config,
 
   int32 num_gauss = gmm->NumGauss();
   double occ_sum = diag_gmm_acc.occupancy().Sum();
+  	  //std::cout<<"occ:"<<diag_gmm_acc.occupancy()<<" occ_sum:"<<occ_sum<<std::endl;
 
   int32 elements_floored = 0, gauss_floored = 0;
   
@@ -305,14 +306,16 @@ void MleDiagGmmUpdate(const MleDiagGmmOptions &config,
   std::vector<int32> to_remove;
   for (int32 i = 0; i < num_gauss; i++) {
     double occ = diag_gmm_acc.occupancy()(i);
+    		//std::cout<<"occupancy["<<i<<"]:"<<occ<<std::endl;
     double prob;
     if (occ_sum > 0.0)
       prob = occ / occ_sum;
     else
       prob = 1.0 / num_gauss;
-
-    if (occ > static_cast<double>(config.min_gaussian_occupancy)
-        && prob > static_cast<double>(config.min_gaussian_weight)) {
+    		//std::cout<<"prob["<<i<<"]:"<<prob<<std::endl;
+    		//std::cout<<config.min_gaussian_occupancy<<" "<<config.min_gaussian_weight<<std::endl;
+    if (occ > static_cast<double>(config.min_gaussian_occupancy) //3
+        && prob > static_cast<double>(config.min_gaussian_weight)) { // 1e-05
       
       ngmm.weights_(i) = prob;
       
@@ -322,7 +325,11 @@ void MleDiagGmmUpdate(const MleDiagGmmOptions &config,
       // update mean, then variance, as far as there are accumulators 
       if (diag_gmm_acc.Flags() & (kGmmMeans|kGmmVariances)) {
         Vector<double> mean(diag_gmm_acc.mean_accumulator().Row(i));
+
+        	//std::cout<<"Mean["<<i<<"]"<<std::endl;for(int ii=0;ii<mean.Dim();ii++) std::cout<<mean(ii)<<" ";std::cout<<std::endl;
+
         mean.Scale(1.0 / occ);
+        	//std::cout<<"Mean Scale (1/occ)["<<i<<"]"<<std::endl;for(int ii=0;ii<mean.Dim();ii++) std::cout<<mean(ii)<<" ";std::cout<<std::endl;
         // transfer to estimate
         ngmm.means_.CopyRowFromVec(mean, i);
       }
@@ -330,9 +337,11 @@ void MleDiagGmmUpdate(const MleDiagGmmOptions &config,
       if (diag_gmm_acc.Flags() & kGmmVariances) {
         KALDI_ASSERT(diag_gmm_acc.Flags() & kGmmMeans);
         Vector<double> var(diag_gmm_acc.variance_accumulator().Row(i));
+        	//std::cout<<"Var["<<i<<"]"<<std::endl;for(int ii=0;ii<var.Dim();ii++) std::cout<<var(ii)<<" ";std::cout<<std::endl;
         var.Scale(1.0 / occ);
+        	//std::cout<<"Var Scale (1/occ)["<<i<<"]"<<std::endl;for(int ii=0;ii<var.Dim();ii++) std::cout<<var(ii)<<" ";std::cout<<std::endl;
         var.AddVec2(-1.0, ngmm.means_.Row(i));  // subtract squared means.
-        
+        	//std::cout<<"Var Subtract squared means ["<<i<<"]"<<std::endl;for(int ii=0;ii<var.Dim();ii++) std::cout<<var(ii)<<" ";std::cout<<std::endl;
         // if we intend to only update the variances, we need to compensate by 
         // adding the difference between the new and old mean
         if (!(flags & kGmmMeans)) {
@@ -351,6 +360,7 @@ void MleDiagGmmUpdate(const MleDiagGmmOptions &config,
         }
         // transfer to estimate
         ngmm.vars_.CopyRowFromVec(var, i);
+        	//std::cout<<"Var estimates ["<<i<<"]"<<std::endl;for(int ii=0;ii<var.Dim();ii++) std::cout<<var(ii)<<" ";std::cout<<std::endl;
       }
     } else {  // Insufficient occupancy.
       if (config.remove_low_count_gaussians &&
@@ -375,6 +385,9 @@ void MleDiagGmmUpdate(const MleDiagGmmOptions &config,
   
   // copy to natural representation according to flags
   ngmm.CopyToDiagGmm(gmm, flags);
+
+  	  //std::cout<<"gmm means_"<<std::endl;std::cout<<ngmm.means_.Row(0)<<" ";std::cout<<std::endl;
+  	  //std::cout<<"gmm vars_"<<std::endl;std::cout<<ngmm.vars_.Row(0)<<" ";std::cout<<std::endl;
 
   gmm->ComputeGconsts();  // or MlObjective will fail.
   BaseFloat obj_new = MlObjective(*gmm, diag_gmm_acc);

@@ -190,26 +190,27 @@ void MleAmDiagGmmUpdate (const MleDiagGmmOptions &config,
                          AmDiagGmm *am_gmm,
                          BaseFloat *obj_change_out,
                          BaseFloat *count_out) {
-  if (am_diag_gmm_acc.Dim() != am_gmm->Dim()) {
+  if (am_diag_gmm_acc.Dim() != am_gmm->Dim()) { // both should be 39
     KALDI_ASSERT(am_diag_gmm_acc.Dim() != 0);
     KALDI_WARN << "Dimensions of accumulator " << am_diag_gmm_acc.Dim()
                << " and gmm " << am_gmm->Dim() << " do not match, resizing "
                << " GMM and setting to zero-mean, unit-variance.";
     ResizeModel(am_diag_gmm_acc.Dim(), am_gmm);
   }
-  
+  	  //std::cout<<"am_diag_gmm_acc.Dim(): "<<am_diag_gmm_acc.Dim()<<std::endl;
   KALDI_ASSERT(am_gmm != NULL);
-  KALDI_ASSERT(am_diag_gmm_acc.NumAccs() == am_gmm->NumPdfs());
+  KALDI_ASSERT(am_diag_gmm_acc.NumAccs() == am_gmm->NumPdfs()); //168
+  	  //std::cout<<"am_diag_gmm_acc.NumAccs(): "<<am_diag_gmm_acc.NumAccs()<<std::endl;
   if (obj_change_out != NULL) *obj_change_out = 0.0;
   if (count_out != NULL) *count_out = 0.0;
 
   BaseFloat tot_obj_change = 0.0, tot_count = 0.0;
   int32 tot_elems_floored = 0, tot_gauss_floored = 0,
       tot_gauss_removed = 0;
-  for (int32 i = 0; i < am_diag_gmm_acc.NumAccs(); i++) {
+  for (int32 i = 0; i < am_diag_gmm_acc.NumAccs(); i++) {// from 0 to 167
     BaseFloat obj_change, count;
     int32 elems_floored, gauss_floored, gauss_removed;
-    
+    	//std::cout<<"am_diag_gmm_acc.GetAcc["<<i<<"]: "<<am_diag_gmm_acc.GetAcc(i).Dim()<<std::endl; NumGauss=1, Dim=39
     MleDiagGmmUpdate(config, am_diag_gmm_acc.GetAcc(i), flags,
                      &(am_gmm->GetPdf(i)),
                      &obj_change, &count, &elems_floored,

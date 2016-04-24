@@ -123,6 +123,7 @@ void GetSplitTargets(const Vector<BaseFloat> &state_occs,
   
   for (int32 pdf_index = 0; pdf_index < num_pdfs; pdf_index++) {
     BaseFloat occ = pow(state_occs(pdf_index), power);
+    	//std::cout<<"occ["<<pdf_index<<"]: "<<occ<<std::endl;
     // initialize with one Gaussian per PDF, to put a floor
     // of 1 on the #Gauss
     split_queue.push(CountStats(pdf_index, 1, occ));
@@ -152,6 +153,7 @@ void GetSplitTargets(const Vector<BaseFloat> &state_occs,
     int32 pdf_index = split_queue.top().pdf_index;
     int32 pdf_tgt_comp = split_queue.top().num_components;
     (*targets)[pdf_index] = pdf_tgt_comp;
+    	//std::cout<<"pdf_tgt_comp["<<pdf_index<<"]: "<<(*targets)[pdf_index]<<std::endl;
     split_queue.pop();
   }
 }

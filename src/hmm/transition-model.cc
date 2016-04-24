@@ -344,50 +344,69 @@ void TransitionModel::MleUpdate(const Vector<double> &stats,
                                 const MleTransitionUpdateConfig &cfg,
                                 BaseFloat *objf_impr_out,
                                 BaseFloat *count_out) {
-  if (cfg.share_for_pdfs) {
+  if (cfg.share_for_pdfs) { //skipping this step
+	//std::cout<<cfg.share_for_pdfs<<std::endl;
     MleUpdateShared(stats, cfg, objf_impr_out, count_out);
     return;
   }
   BaseFloat count_sum = 0.0, objf_impr_sum = 0.0;
   int32 num_skipped = 0, num_floored = 0;
-  KALDI_ASSERT(stats.Dim() == NumTransitionIds()+1);
+  KALDI_ASSERT(stats.Dim() == NumTransitionIds()+1); //385 and 384+1
+  	  //std::cout<<"Dim: "<<stats.Dim()<<" NumTransitionIds:"<<NumTransitionIds()<<std::endl;
   for (int32 tstate = 1; tstate <= NumTransitionStates(); tstate++) {// from 0 to 168
     int32 n = NumTransitionIndices(tstate);//4 or 2
-    	//std::cout<<"tstate: "<<tstate<<" indeces:"<<n<<std::endl;
+    	//std::cout<<"tstate: "<<tstate<<" n:"<<n<<std::endl;
     KALDI_ASSERT(n>=1);
     if (n > 1) {  // no point updating if only one transition...
-      Vector<double> counts(n);
+      Vector<double> counts(n); //for(int ii=0; ii<n;ii++) std::cout<<"counts["<<ii<<"]: "<<counts(ii)<<std::endl;
       for (int32 tidx = 0; tidx < n; tidx++) {
         int32 tid = PairToTransitionId(tstate, tidx);
         counts(tidx) = stats(tid);
+        //std::cout<<"counts["<<tidx<<"] = "<< "stats["<<tid<<"]: "<<stats(tid)<<std::endl;
       }
       double tstate_tot = counts.Sum();
+      //std::cout<<"tstate_tot: "<<tstate_tot<<std::endl;
       count_sum += tstate_tot;
-      if (tstate_tot < cfg.mincount) { num_skipped++; }
+
+      if (tstate_tot < cfg.mincount) { num_skipped++;
+      	  //std::cout<<"tstate_total<cfg.mincount"<<std::endl;
+      }//cfg.mincount=5
       else {
         Vector<BaseFloat> old_probs(n), new_probs(n);
+        	//std::cout<<"Initiate new_probs"<<std::endl;
         for (int32 tidx = 0; tidx < n; tidx++) {
           int32 tid = PairToTransitionId(tstate, tidx);
           old_probs(tidx) = new_probs(tidx) = GetTransitionProb(tid);
+          	  //std::cout<<"old_probs["<<tidx<<"] = new_probs["<<tidx<<"] = GetTransitionProb["<<tid<<"]:"<<GetTransitionProb(tid)<<std::endl;
         }
-        for (int32 tidx = 0; tidx < n; tidx++)
+        for (int32 tidx = 0; tidx < n; tidx++){
           new_probs(tidx) = counts(tidx) / tstate_tot;
+        	//std::cout<<"new_probs["<<tidx<<"] ="<<"counts["<<tidx<<"]/tstate_tot = "<<new_probs(tidx)<<std::endl;
+        }
         for (int32 i = 0; i < 3; i++) {  // keep flooring+renormalizing for 3 times..
-          new_probs.Scale(1.0 / new_probs.Sum());
-          for (int32 tidx = 0; tidx < n; tidx++)
+          new_probs.Scale(1.0 / new_probs.Sum());//1.0/1.0
+          //std::cout<<"new_probs.Scale(1.0/new_probs.Sum())= "<<new_probs.Scale(1.0 / new_probs.Sum())<<std::endl;
+          //std::cout<<"new_probs.Sum()= "<<new_probs.Sum()<<std::endl;
+          for (int32 tidx = 0; tidx < n; tidx++){
             new_probs(tidx) = std::max(new_probs(tidx), cfg.floor);
+            //std::cout<<"max("<<new_probs(tidx)<<", "<<cfg.floor<<") = "<<new_probs(tidx)<<std::endl;
+          }
         }
         // Compute objf change
         for (int32 tidx = 0; tidx < n; tidx++) {
           if (new_probs(tidx) == cfg.floor) num_floored++;
           double objf_change = counts(tidx) * (Log(new_probs(tidx))
                                                - Log(old_probs(tidx)));
+          //std::cout<<"objf_change = "<<counts(tidx)<<"*("<<Log(new_probs(tidx))<<"-"<<Log(old_probs(tidx))<<") = "<<objf_change<<std::endl;
           objf_impr_sum += objf_change;
+          //std::cout<<"objf_impr_sum: "<<objf_impr_sum<<std::endl;
         }
         // Commit updated values.
+        //std::cout<<"Commit updated values"<<std::endl;
         for (int32 tidx = 0; tidx < n; tidx++) {
           int32 tid = PairToTransitionId(tstate, tidx);
           log_probs_(tid) = Log(new_probs(tidx));
+          //std::cout<<"log_probs_["<<tid<<"]= "<<"Log("<<new_probs(tidx)<<") = "<<log_probs_(tid)<<std::endl;
           if (log_probs_(tid) - log_probs_(tid) != 0.0)
             KALDI_ERR << "Log probs is inf or NaN: error in update or bad stats?";
         }
