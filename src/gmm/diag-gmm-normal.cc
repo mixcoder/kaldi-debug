@@ -66,17 +66,25 @@ void DiagGmmNormal::CopyToDiagGmm(DiagGmm *diaggmm, GmmFlagsType flags) const {
     if (flags & kGmmVariances) {
       diaggmm->inv_vars_.CopyFromMat(vars_);
       diaggmm->inv_vars_.InvertElements();
+      //std::cout<<"Invert vars "<<diaggmm->inv_vars_.Row(0)<<std::endl;
 
       // update the mean related natural part with the old mean, if necessary
       if (!(flags & kGmmMeans)) {
+    	  //std::cout<<"!flags: "<<flags<<std::endl;
         diaggmm->means_invvars_.CopyFromMat(oldg.means_);
         diaggmm->means_invvars_.MulElements(diaggmm->inv_vars_);
       }
     }
 
     if (flags & kGmmMeans) {
+    	//std::cout<<"flags: "<<flags<<std::endl;
       diaggmm->means_invvars_.CopyFromMat(means_);
+      //std::cout<<diaggmm->means_invvars_.Row(0)<<std::endl;
+
+      //std::cout<<"Multiplied vars "<<diaggmm->inv_vars_.Row(0)<<std::endl;
       diaggmm->means_invvars_.MulElements(diaggmm->inv_vars_);
+      //std::cout<<"Multiplied means "<<diaggmm->means_invvars_.Row(0)<<std::endl;
+      //std::cout<<"Multiplied vars "<<diaggmm->inv_vars_.Row(0)<<std::endl;
     }
 
     diaggmm->valid_gconsts_ = false;

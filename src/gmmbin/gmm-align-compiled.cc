@@ -98,7 +98,9 @@ int main(int argc, char *argv[]) {
         KALDI_WARN << "No features for utterance " << utt;
       } else {
         const Matrix<BaseFloat> &features = feature_reader.Value(utt);
+
         VectorFst<StdArc> decode_fst(fst_reader.Value());
+
         fst_reader.FreeCurrent();  // this stops copy-on-write of the fst
         // by deleting the fst inside the reader, since we're about to mutate
         // the fst by adding transition probs.

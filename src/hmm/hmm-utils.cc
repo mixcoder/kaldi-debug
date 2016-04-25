@@ -807,11 +807,13 @@ void AddTransitionProbs(const TransitionModel &trans_model,
   for (StateIterator<VectorFst<StdArc> > siter(*fst);
       !siter.Done();
       siter.Next()) {
+	  	  //std::cout<<"siter"<<siter.Value()<<std::endl;
     for (MutableArcIterator<VectorFst<StdArc> > aiter(fst, siter.Value());
          !aiter.Done();
          aiter.Next()) {
       StdArc arc = aiter.Value();
       StdArc::Label l = arc.ilabel;
+      	  //std::cout<<"aiter: "<<arc.ilabel<<std::endl;
       if (l >= 1 && l <= num_tids) {  // a transition-id.
         BaseFloat scaled_log_prob = GetScaledTransitionLogProb(trans_model,
                                                                l,

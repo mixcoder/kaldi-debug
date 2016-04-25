@@ -442,6 +442,20 @@ speaker009-par028s0009
 4 1 16 15 18 17 350 349 352 351 354 353 116 115 118 117 120 119 368 367 370 369 372 371 152 151 154 153 156 155 266 265 268 267 270 269 194 193 196 195 198 197 3 1 12 10 18 17 284 283 286 285 288 287 116 115 118 117 120 119 266 265 268 267 270 269 4 1 13 15 6 5 9 10 8 5 18 17 284 283 286 285 288 287 290 289 292 291 294 293 152 151 154 153 156 155 320 319 322 321 324 323 152 151 154 153 156 155 134 133 136 135 138 137 110 109 112 111 114 113 266 265 268 267 270 269 116 115 118 117 120 119 290 289 292 291 294 293 272 271 274 273 276 275 134 133 136 135 138 137 266 265 268 267 270 269 152 151 154 153 156 155 188 187 190 189 192 191 4 1 16 15 18 17 290 289 292 291 294 293 110 109 112 111 114 113 134 133 136 135 138 137 182 181 184 183 186 185 302 301 304 303 306 305 242 241 244 243 246 245 272 271 274 273 276 275 350 349 352 351 354 353 152 151 154 153 156 155 266 265 268 267 270 269 302 301 304 303 306 305 236 235 238 237 240 239 152 151 154 153 156 155 188 187 190 189 192 191 290 289 292 291 294 293 152 151 154 153 156 155 284 283 286 285 288 287 332 331 334 333 336 335 122 121 124 123 126 125 242 241 244 243 246 245 182 181 184 183 186 185 236 235 238 237 240 239 182 181 184 183 186 185 3 1 11 10 14 15 9 10 8 5 18 17 
 
 
+#############################################################################
+-spustenie gmm-acc-stats-ali
+#############################################################################
+
+Accumulate stats for GMM training
+-------------------------------------------------------------------------------------------------------------------
+Usage:  gmm-acc-stats-ali [options] <model-in> <feature-rspecifier> "
+        "<alignments-rspecifier> <stats-out>\n"
+-------------------------------------------------------------------------------------------------------------------
+
+gmm-acc-stats-ali --binary=false exp/mono/0.mdl 'ark,s,cs:apply-cmvn --utt2spk=ark:data/train/split1/1/utt2spk scp:data/train/split1/1/cmvn.scp scp:data/train/split1/1/feats.scp ark:- | add-deltas ark:- ark:- |' ark:- exp/mono/0.1.acc 
+
+
+
 
 #############################################################################
 -spustenie gmm-est
@@ -474,9 +488,9 @@ gmm-sum-accs – exp/mono/0.1.acc => export transition statistics
 </GMMACCS> <total_like> -509146.6 <total_frames> 4888 
 
 
-################################
-Update transition probabilities
-################################
+
+#Update transition probabilities
+
 transition-model.cc:
 void TransitionModel::MleUpdate(const Vector<double> &stats,  
                                 const MleTransitionUpdateConfig &cfg,
@@ -600,9 +614,9 @@ TransitionModel::Update, objf change is 0.114047 (objf_impr_sum / count_sum)per 
 0 probabilities floored, 50 out of 168 transition-states skipped due to insufficient data (it is normal to have some skipped.)
 Transition model update: Overall 0.114047 log-like improvement per frame over 4888 (count_sum) frames.
 
-################################
-Update gmm parameters	
-################################
+
+#Update gmm parameters	
+
 mle-am-diag-gmm.cc
 mle-diag-gmm.cc
 update mean, then variance, as far as there are accumulators 
@@ -627,6 +641,20 @@ gmm means_
 gmm vars_
  [ 99.0808 120.512 123.205 213.95 92.819 146.543 138.149 154.048 192.275 116.159 118.205 133.298 95.3822 2.78368 6.59341 3.75858 7.54045 7.82375 10.056 9.64695 12.0689 13.4704 8.31159 9.72033 8.15668 5.93097 0.468004 0.766133 0.885991 1.41963 1.3543 1.70172 1.32189 2.19572 1.95876 1.42763 1.76789 1.6095 1.14173 ]
 
+// copy to natural representation according to flags
+  ngmm.CopyToDiagGmm(gmm, flags);
+
+diaggmm->inv_vars_.CopyFromMat(vars_);
+diaggmm->inv_vars_.InvertElements(); (1/vars_)
+
+Invert vars  [ 0.0100928 0.00829785 0.00811659 0.0046741 0.0107699 0.00682573 0.00723873 0.00649122 0.00520084 0.00860897 0.00846001 0.00750236 0.0104836 0.359201 0.151667 0.266051 0.132523 0.127777 0.0994458 0.10368 0.0828562 0.0742362 0.120309 0.10288 0.122603 0.168566 2.1366 1.30522 1.12865 0.70428 0.73799 0.587568 0.756708 0.455424 0.510523 0.700479 0.565651 0.621284 0.875699 ]
+
+diaggmm->means_invvars_.CopyFromMat(means_);
+diaggmm->means_invvars_.MulElements(diaggmm->inv_vars_); (means_*inv_vars_)
+
+means_  [ -0.0425156 -0.0103551 0.0118949 0.011252 0.00312682 0.00539229 0.0132929 0.00244294 0.00221948 0.00620005 0.00137709 0.0020285 0.0133579 -0.0627543 0.00211664 0.0398135 -0.0491896 -0.035554 0.0153888 -0.0205254 -0.0405098 -0.0165923 0.0462226 -0.0442755 -0.0200632 0.0178357 0.350217 0.0376211 -0.12038 -0.124293 -0.0245774 0.0522442 -0.162425 -0.00912309 -0.061579 -0.00344594 0.0117972 0.069712 -0.0444669 ]
+
+
 …
 
 occupancy[0]:2
@@ -637,30 +665,35 @@ gmm means_
 gmm vars_
  [ 81.1887 156.407 146.211 229.871 132.421 182.939 166.347 158.207 182.483 128.602 124.674 167.647 110.899 3.57645 6.76603 7.30757 9.90402 8.58092 11.1261 9.27592 10.8852 12.5102 8.9217 8.98685 10.5764 6.86691 0.521505 1.01655 1.15605 1.52617 1.49106 1.96416 1.65054 2.0339 2.25537 1.65129 1.64368 1.96612 1.26977 ]
 
+Invert vars  [ 0.0123167 0.0063935 0.00683924 0.00435021 0.00755147 0.00546644 0.00601174 0.0063205 0.00547986 0.00777559 0.00802067 0.00596496 0.00901717 0.2796 0.147797 0.136837 0.100973 0.116533 0.0898753 0.107813 0.0918643 0.0799347 0.112084 0.111262 0.0945517 0.145634 1.91759 0.983726 0.864961 0.655313 0.670631 0.509108 0.605913 0.491648 0.443389 0.605578 0.608315 0.508628 0.787589 ]
 
+Multiplied means  [ 8.15116e-09 8.57592e-11 9.57203e-11 -1.19037e-10 -7.36665e-12 -5.99124e-10 3.19988e-10 -1.68743e-09 -4.63343e-10 -1.31842e-09 -1.47098e-10 5.21235e-10 9.82897e-10 -0.000122269 0.00115691 0.0013513 0.000747595 0.00100303 -4.9888e-05 0.000466167 -0.000508195 -0.000983847 7.26268e-05 -0.000295005 5.44006e-05 -0.000276942 -0.000769783 0.00103973 -0.000180192 -0.000934103 0.00056885 0.000684758 0.000109176 0.000524412 -0.000357726 -0.00089961 0.000273037 -0.000194646 -0.000327506 ]
 
-
-
-
-
-
-gmm-sum-accs - exp/mono/0.1.acc 
-
-Sum multiple accumulated stats files for GMM training.
 
 
 #############################################################################
--spustenie gmm-acc-stats-ali
+-spustenie gmm-align-compiled
 #############################################################################
 
-Accumulate stats for GMM training
+Align features given [GMM-based] models
+
 -------------------------------------------------------------------------------------------------------------------
-Usage:  gmm-acc-stats-ali [options] <model-in> <feature-rspecifier> "
-        "<alignments-rspecifier> <stats-out>\n"
+Usage:  gmm-align-compiled [options] model-in graphs-rspecifier 
+		feature-rspecifier alignments-wspecifier [scores-wspecifier]
 -------------------------------------------------------------------------------------------------------------------
 
-gmm-acc-stats-ali --binary=false exp/mono/0.mdl 'ark,s,cs:apply-cmvn --utt2spk=ark:data/train/split1/1/utt2spk scp:data/train/split1/1/cmvn.scp scp:data/train/split1/1/feats.scp ark:- | add-deltas ark:- ark:- |' ark:- exp/mono/0.1.acc 
+gmm-align-compiled --transition-scale=1.0 --acoustic-scale=0.1 --self-loop-scale=0.1 --beam=6 --retry-beam=24 --careful=false 'gmm-boost-silence --boost=1.0 1 exp/mono/1.mdl - |' 'ark:gunzip -c exp/mono/fsts.1.gz|' 'ark,s,cs:apply-cmvn  --utt2spk=ark:data/train/split1/1/utt2spk scp:data/train/split1/1/cmvn.scp scp:data/train/split1/1/feats.scp ark:- | add-deltas ark:- ark:- |' 'ark,t:|gzip -c >exp/mono/ali.1.gz' 
 
+gmm-boost-silence --boost=1.0 1 exp/mono/1.mdl - 
+
+Modify GMM-based model to boost (by a certain factor) all
+probabilities associated with the specified phones (could be
+all silence phones, or just the ones used for optional silence).
+Note: this is done by modifying the GMM weights.  If the silence
+model shares a GMM with other models, then it will modify the GMM
+weights for all models that may correspond to silence.
+
+Usage: gmm-boost-silence [options] <silence-phones-list> <model-in> <model-out>
 
 
 

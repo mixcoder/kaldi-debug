@@ -11,7 +11,7 @@
 nj=1
 cmd=run.pl
 scale_opts="--transition-scale=1.0 --acoustic-scale=0.1 --self-loop-scale=0.1"
-num_iters=40    # Number of iterations of training
+num_iters=2    # Number of iterations of training
 max_iter_inc=30 # Last iter to increase #Gauss on.
 totgauss=1000 # Target #Gaussians.  
 careful=false
@@ -104,7 +104,7 @@ if [ $stage -le 0 ]; then
     $dir/0.mdl "gmm-sum-accs - $dir/0.*.acc|" $dir/1.mdl 2> $dir/log/update.0.log || exit 1;
   #rm $dir/0.*.acc
 fi
-: <<'END'
+#: <<'END'
 
 beam=6 # will change to 10 below after 1st pass
 # note: using slightly wider beams for WSJ vs. RM.
@@ -127,7 +127,7 @@ while [ $x -lt $num_iters ]; do
     $cmd $dir/log/update.$x.log \
       gmm-est --write-occs=$dir/$[$x+1].occs --mix-up=$numgauss --power=$power $dir/$x.mdl \
       "gmm-sum-accs - $dir/$x.*.acc|" $dir/$[$x+1].mdl || exit 1;
-    rm $dir/$x.mdl $dir/$x.*.acc $dir/$x.occs 2>/dev/null
+    #rm $dir/$x.mdl $dir/$x.*.acc $dir/$x.occs 2>/dev/null
   fi
   if [ $x -le $max_iter_inc ]; then
      numgauss=$[$numgauss+$incgauss];
@@ -140,7 +140,7 @@ done
 
 utils/summarize_warnings.pl $dir/log
 
-END
+#END
 
 echo Done
 

@@ -109,6 +109,7 @@ void AmDiagGmm::SplitByCount(const Vector<BaseFloat> &state_occs,
                   min_count, &targets);
 
   for (int32 i = 0; i < NumPdfs(); i++) {
+	  //std::cout<<"densities_["<<i<<"]: "<<*densities_[i]<<std::endl;
     if (densities_[i]->NumGauss() < targets[i]){
       densities_[i]->Split(targets[i], perturb_factor);
       	  //std::cout<<"densities_["<<i<<"]: "<<densities_[i]<<std::endl;

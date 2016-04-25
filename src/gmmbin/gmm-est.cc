@@ -134,16 +134,20 @@ int main(int argc, char *argv[]) {
         //pdf_occs[167]2
         //std::cout<<"pdf_occs["<<i<<"]"<<pdf_occs(i)<<std::endl;
       }
-      if (mixdown != 0)
+      if (mixdown != 0){
         am_gmm.MergeByCount(pdf_occs, mixdown, power, min_count);
-
-      if (mixup != 0)
+        //std::cout<<"MergeByCount"<<std::endl;
+      }
+      if (mixup != 0){
         am_gmm.SplitByCount(pdf_occs, mixup, perturb_factor,
                             power, min_count);
+        //std::cout<<"SplitByCount"<<std::endl;
+      }
 
       if (!occs_out_filename.empty()) {
         bool binary = false;
         WriteKaldiObject(pdf_occs, occs_out_filename, binary);
+        //std::cout<<"Occs_out_filename.empty"<<std::endl;
       }
     }
 
