@@ -122,7 +122,39 @@ subset-feats --n=10 ark:- ark:-
  </Topology>
 
 
+show-transitions data/lang_train/phones.txt exp/mono/0.mdl
 
+Transition-state 1: phone = sp hmm-state = 0 pdf = 0
+ Transition-id = 1 p = 0.25 [self-loop]
+ Transition-id = 2 p = 0.25 [0 -> 1]
+ Transition-id = 3 p = 0.25 [0 -> 2]
+ Transition-id = 4 p = 0.25 [0 -> 3]
+Transition-state 2: phone = sp hmm-state = 1 pdf = 1
+ Transition-id = 5 p = 0.25 [self-loop]
+ Transition-id = 6 p = 0.25 [1 -> 2]
+ Transition-id = 7 p = 0.25 [1 -> 3]
+ Transition-id = 8 p = 0.25 [1 -> 4]
+Transition-state 3: phone = sp hmm-state = 2 pdf = 2
+ Transition-id = 9 p = 0.25 [2 -> 1]
+ Transition-id = 10 p = 0.25 [self-loop]
+ Transition-id = 11 p = 0.25 [2 -> 3]
+ Transition-id = 12 p = 0.25 [2 -> 4]
+Transition-state 4: phone = sp hmm-state = 3 pdf = 3
+ Transition-id = 13 p = 0.25 [3 -> 1]
+ Transition-id = 14 p = 0.25 [3 -> 2]
+ Transition-id = 15 p = 0.25 [self-loop]
+ Transition-id = 16 p = 0.25 [3 -> 4]
+Transition-state 5: phone = sp hmm-state = 4 pdf = 4
+ Transition-id = 17 p = 0.75 [self-loop]
+ Transition-id = 18 p = 0.25 [4 -> 5]
+…
+
+Transition-state 167: phone = O=: hmm-state = 1 pdf = 166
+ Transition-id = 381 p = 0.75 [self-loop]
+ Transition-id = 382 p = 0.25 [1 -> 2]
+Transition-state 168: phone = O=: hmm-state = 2 pdf = 167
+ Transition-id = 383 p = 0.75 [self-loop]
+ Transition-id = 384 p = 0.25 [2 -> 3]
 
 
 
@@ -225,6 +257,9 @@ EndContextDependency
 “TE 0 53” the key "0" is the phone-position of zero which represents the central (and only) phone since the context width (N) is 1. The number of entries in the table is 53 (in this case, the number of phones plus one). The first EventMap in the table (index zero) is NULL, because there is no phone with index zero.
 
 "TE -1 5 ( CE 0 CE 1 CE 2 CE 3 CE 4 )" represents splitting with a TableEventMap on the pdf-class "-1" (effectively, the HMM-position), and returning values 0 through 4. The values represent the five pdf-ids for the silence and noise phones SIL, NSN and SPN; in our setup, the pdfs are shared between these three non-speech phones (only the transition matrix is specific to each non-speech phone). Note: we have a 5-state rather than 3-state HMM for these phones, hence 
+
+
+
 Inicializácia GMM
 
 -pomocou objektov tried AmDiagGmm a DiagGmm
@@ -419,6 +454,55 @@ speaker008-par025s0003
 speaker009-par028s0009
 39108 28097 25241 18131 28441 31255 28936 
 
+fsts.1.gz | head -39
+speaker000-par001s0030 
+from-state to-state input-symbol output-symbol
+0	312	2	0	0.693359
+0	313	3	0	0.693359
+0	314	4	0	0.693359
+0	4	368	45332
+1	315	6	0
+1	316	7	0
+1	317	8	0
+2	318	9	0
+2	319	11	0
+2	320	12	0
+3	321	13	0
+3	322	14	0
+3	323	16	0
+4	5	370	0
+4	4	367	0
+5	6	372	0
+5	5	369	0
+6	7	152	0
+6	6	371	0
+7	8	154	0
+7	7	151	0
+8	9	156	0
+8	8	153	0
+9	324	2	0	1.38672
+9	325	3	0	1.38672
+9	326	4	0	1.38672
+9	13	302	30302	0.693359
+9	14	374	0	0.693359
+9	9	155	0
+10	327	6	0
+10	328	7	0
+10	329	8	0
+11	330	9	0
+11	331	11	0
+11	332	12	0
+12	333	13	0
+12	334	14	0
+12	335	16	0
+
+
+Vykreslenie dekodovacej siete:
+
+
+fstcompile exp/mono/fsts.1.txt > fst.bin
+fstdraw fst.bin > fst.dot
+dot -Tpdf fst.dot > fst.pdf
 
 #############################################################################
 -spustenie align-equal-compiled
@@ -694,7 +778,6 @@ model shares a GMM with other models, then it will modify the GMM
 weights for all models that may correspond to silence.
 
 Usage: gmm-boost-silence [options] <silence-phones-list> <model-in> <model-out>
-
 
 
 
