@@ -86,9 +86,9 @@ if [ $stage -le -2 ]; then
   $cmd JOB=1:$nj $dir/log/compile_graphs.JOB.log \
     compile-train-graphs $dir/tree $dir/0.mdl  $lang/L.fst \
     "ark:sym2int.pl --map-oov $oov_sym -f 2- $lang/words.txt < $sdata/JOB/text|" \
-    "ark:$dir/fsts.JOB.bin" || exit 1;
+    "ark:|gzip -c >$dir/fsts.JOB.gz" || exit 1;
 fi
-: <<'END'
+#: <<'END'
 if [ $stage -le -1 ]; then
   echo "$0: Aligning data equally (pass 0)"
   $cmd JOB=1:$nj $dir/log/align.0.JOB.log \
@@ -140,7 +140,7 @@ done
 
 utils/summarize_warnings.pl $dir/log
 
-END
+#END
 
 echo Done
 

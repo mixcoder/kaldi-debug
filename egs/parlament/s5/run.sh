@@ -87,7 +87,9 @@ steps/train_mono.sh --nj $njobs --cmd "$train_cmd" data/train data/lang_train ex
 # 	TRAINING TRIPHONE MODELS
 #===========================================================
 
-#./steps/align_si.sh --nj $njobs --cmd "$train_cmd" data/train data/lang_train exp/mono exp/mono_ali || exit 1;
+#steps/align_si.sh --nj $njobs --cmd "$train_cmd" data/train data/lang_train exp/mono exp/mono_ali || exit 1;
+
+#steps/train_lda_mllt.sh --cmd "$train_cmd" 2000 11000 data/train data/lang_train exp/mono_ali exp/mono_lda || exit 1;
 
 # train tri1 [first triphone pass]
 #steps/train_deltas.sh --cmd "$train_cmd" 2000 11000 data/train data/lang_train exp/mono_ali exp/tri1 || exit 1;

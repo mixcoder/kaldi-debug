@@ -504,6 +504,7 @@ fstcompile exp/mono/fsts.1.txt > fst.bin
 fstdraw fst.bin > fst.dot
 dot -Tpdf fst.dot > fst.pdf
 
+
 #############################################################################
 -spustenie align-equal-compiled
 #############################################################################

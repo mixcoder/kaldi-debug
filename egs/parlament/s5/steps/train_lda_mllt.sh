@@ -31,7 +31,7 @@ splice_opts=
 cluster_thresh=-1  # for build-tree control final bottom-up clustering of leaves
 norm_vars=false # deprecated.  Prefer --cmvn-opts "--norm-vars=false"
 cmvn_opts=
-context_opts=   # use "--context-width=5 --central-position=2" for quinphone.
+context_opts="--context-width=1 --central-position=0" #for monophone
 # End configuration.
 train_tree=true  # if false, don't actually train the tree.
 use_lda_mat=  # If supplied, use this LDA[+MLLT] matrix.
@@ -112,7 +112,7 @@ if [ $stage -le -5 ]; then
 fi
 
 cur_lda_iter=0
-
+: <<'END'
 if [ $stage -le -4 ] && $train_tree; then
   echo "Accumulating tree stats"
   $cmd JOB=1:$nj $dir/log/acc_tree.JOB.log \
@@ -225,5 +225,7 @@ ln -s $cur_lda_iter.mat $dir/final.mat
 # Summarize warning messages...
 
 utils/summarize_warnings.pl $dir/log
+
+END
 
 echo Done training system with LDA+MLLT features in $dir
