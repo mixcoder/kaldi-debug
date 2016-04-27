@@ -96,11 +96,11 @@ if [ $stage -le -5 ]; then
     $cmd JOB=1:$nj $dir/log/lda_acc.JOB.log \
     ali-to-post "ark:gunzip -c $alidir/ali.JOB.gz|" ark:- \| \
       weight-silence-post 0.0 $silphonelist $alidir/final.mdl ark:- ark:- \| \
-      acc-lda --rand-prune=$randprune $alidir/final.mdl "$splicedfeats" ark,s,cs:- \
+      acc-lda --binary=false --rand-prune=$randprune $alidir/final.mdl "$splicedfeats" ark,s,cs:- \
       $dir/lda.JOB.acc || exit 1;
-    est-lda --write-full-matrix=$dir/full.mat --dim=$dim $dir/0.mat $dir/lda.*.acc \
+    est-lda --binary=false --write-full-matrix=$dir/full.mat --dim=$dim $dir/0.mat $dir/lda.*.acc \
       2>$dir/log/lda_est.log || exit 1;
-    rm $dir/lda.*.acc
+    #rm $dir/lda.*.acc
   else
     echo "Using supplied LDA matrix $use_lda_mat"
     cp $use_lda_mat $dir/0.mat || exit 1;
