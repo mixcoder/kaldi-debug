@@ -101,13 +101,13 @@ int main(int argc, char *argv[]) {
       ConvertPosteriorToPdfs(trans_model, post, &pdf_post);
       for (int32 i = 0; i < feats.NumRows(); i++) {
         SubVector<BaseFloat> feat(feats, i);
-        	std::cout<<"frame:"<<i;
-        	std::cout<<" num_pdfs:"<<pdf_post[i].size()<<std::endl;
+        	//std::cout<<"frame:"<<i;
+        	//std::cout<<" num_pdfs:"<<pdf_post[i].size()<<std::endl;
         for (size_t j = 0; j < pdf_post[i].size(); j++) {
         	//std::cout<<"pdf_id["<<i<<"]"<<"["<<j<<"]: "<<pdf_post[i][j].first<<"  weight["<<i<<"]"<<"["<<j<<"]: "<<pdf_post[i][j].second<<std::endl;
           int32 pdf_id = pdf_post[i][j].first;
           BaseFloat weight = RandPrune(pdf_post[i][j].second, rand_prune);
-          	  std::cout<<"pdf_id["<<i<<"]"<<"["<<j<<"]: "<<pdf_id<<"  weight["<<i<<"]"<<"["<<j<<"]: "<<weight<<std::endl;
+          	  //std::cout<<"pdf_id["<<i<<"]"<<"["<<j<<"]: "<<pdf_id<<"  weight["<<i<<"]"<<"["<<j<<"]: "<<weight<<std::endl;
           if (weight != 0.0) {
             lda.Accumulate(feat, pdf_id, weight);
           }
@@ -116,7 +116,7 @@ int main(int argc, char *argv[]) {
       num_done++;
       if (num_done % 100 == 0)
         KALDI_LOG << "Done " << num_done << " utterances.";
-    }
+    } //for featurereader
 
     KALDI_LOG << "Done " << num_done << " files, failed for "
               << num_fail;
